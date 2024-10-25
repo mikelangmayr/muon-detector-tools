@@ -8,7 +8,6 @@ from muon_fit.muon_sample import muon_sample
 def muon_fit(data_dir="", mw0=0.62, mw1=0.73, gplot=None, hplot=None, ps=None, crplot=None, verbose=None):
     # Initial parameters
     bin_size = 0.025
-    number_of_bins = 100
 
     # Get image list
     imlist = sorted(glob.glob(f'{data_dir}/img*_00.fits'))
@@ -113,22 +112,6 @@ def muon_fit(data_dir="", mw0=0.62, mw1=0.73, gplot=None, hplot=None, ps=None, c
     print(f"allbig and allsmall lengths: {len(allbig)} vs {len(allsmall)}")
     diflen = np.sqrt(allbig ** 2 - allsmall ** 2) * 15.0
     diflen2 = np.sqrt(allbig ** 2 - (1/12)) * 15.0 # (1/12^(1/2))**2 is 1/12
-
-    # mo = [np.mean(diflen), np.var(diflen)]
-    # mo2 = [np.mean(diflen2), np.var(diflen2)]
-    #
-    # print(f'Mean diff  = {mo[0]:.2f} ± {np.sqrt(mo[1]):.2f}')
-    # print(f'Mean diff2 = {mo2[0]:.2f} ± {np.sqrt(mo2[1]):.2f}')
-    #
-    # if ps:
-    #     # xlim = [-1, 30]
-    #     plt.plot(diflen2, label='Diffusion Length: σmax - 1/12^(1/2)')
-    #     # plt.xlim(xlim)
-    #     plt.axvline(np.median(diflen2), color='r', linestyle='--', label='Median Diff 2')
-    #     plt.plot(diflen, label='Diffusion Length σmax - σmin')
-    #     plt.axvline(np.median(diflen), color='b', linestyle='--', label='Median Diff')
-    #     plt.legend()
-    #     plt.show()
 
     print(f"Processed {len(imlist)} images, {p} muon CRs")
 

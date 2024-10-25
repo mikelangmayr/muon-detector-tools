@@ -81,7 +81,7 @@ def muon_fit(data_dir="", mw0=0.62, mw1=0.73, gplot=None, hplot=None, ps=None, c
                             big[j] = np.max(yfit[weight_mask])
                             small[j] = np.min(yfit[weight_mask])
 
-                            if big[j] != 0 and small[j] != 0:
+                            if big[j] > 0 and small[j] > 0:
                                 allbig = np.append(allbig, big[j])
                                 allsmall = np.append(allsmall, small[j])
                                 p += 1
@@ -107,6 +107,10 @@ def muon_fit(data_dir="", mw0=0.62, mw1=0.73, gplot=None, hplot=None, ps=None, c
             plt.title(imf)
             plt.legend()
             plt.show()
+
+
+    allbig = allbig[allbig > 0]
+    allsmall = allsmall[allsmall > 0]
 
     # Final histogram over all files
     print(f"allbig and allsmall lengths: {len(allbig)} vs {len(allsmall)}")

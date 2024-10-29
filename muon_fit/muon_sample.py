@@ -11,8 +11,8 @@ def muon_sample(im, seg, sno, x, gplot=False):
     """
     muon_sample - Return the y trace of a muon.
     """
-    yivec = np.squeeze(im[x, :])
-    ysvec = np.squeeze(seg[x, :])
+    yivec = np.squeeze(im[:, x])
+    ysvec = np.squeeze(seg[:, x])
 
     ny = len(ysvec)
     svec = np.where(ysvec == sno)[0]

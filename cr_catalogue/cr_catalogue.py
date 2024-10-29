@@ -6,7 +6,7 @@ from scipy.stats import zscore
 from scipy.signal import find_peaks
 
 
-def cr_catalogue(data_dir="", z_score_limit=2.5):
+def cr_catalogue(data_dir="", zscore_limit=2.5):
     # Get image list
     cr_list = sorted(glob.glob(f'{data_dir}/img*_cr.cat'))
     if not cr_list:
@@ -33,7 +33,7 @@ def cr_catalogue(data_dir="", z_score_limit=2.5):
     z_scores = zscore(counts)
 
     # Identify bins that are considered spikes
-    spike_bins = np.where(z_scores > z_score_limit)[0]
+    spike_bins = np.where(z_scores > zscore_limit)[0]
 
     if len(spike_bins) > 0:
         # Get the bin edges corresponding to the start and end of the main spike

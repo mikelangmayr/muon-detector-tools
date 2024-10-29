@@ -41,7 +41,7 @@ def muon_fit(data_dir="", mw0=0.62, mw1=0.73, gplot=None, hplot=None, ps=None, c
             sno = sids[j]
             costh = np.cos(thetas[j])
 
-            t = np.where(seg == sno)[0]
+            t = np.where(seg == sno)[1]
             if len(t) > 0:
                 ind = np.array(np.unravel_index(t, seg.shape))
 

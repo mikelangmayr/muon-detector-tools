@@ -157,9 +157,13 @@ def muon_fit(data_dir="", mw0=0.62, mw1=0.73, gplot=None, hplot=None, ps=None, c
     plt.plot(x_values1, gaussian1 * sum(hist1) * (bin_edges1[1] - bin_edges1[0]), color='green', linestyle='--', label='Gaussian Fit σMAX - σMIN')
     plt.plot(x_values2, gaussian2 * sum(hist2) * (bin_edges2[1] - bin_edges2[0]), color='blue', linestyle='--', label='Gaussian Fit σMAX - 1/12^(1/2)')
 
-    # Print mean and variance
-    print(f'σMAX - σMIN: Mean (μ): {mean1:.2f}\nVariance (σ²): {std_dev1**2:.2f}')
-    print(f'σMAX - 1/12^(1/2): Mean (μ): {mean2:.2f}\nVariance (σ²): {std_dev2**2:.2f}')
+    # Display mean and variance
+    textstr1 = f'σMAX - σMIN:\nMean (μ): {mean1:.2f}\nVariance (σ²): {std_dev1**2:.2f}'
+    textstr2 = f'σMAX - 1/12^(1/2):\nMean (μ): {mean2:.2f}\nVariance (σ²): {std_dev2**2:.2f}'
+    plt.text(0.05, 0.95, textstr1 + '\n' + textstr2, transform=plt.gca().transAxes, fontsize=10,
+            verticalalignment='top', bbox=dict(boxstyle='round,pad=0.5', edgecolor='gray', facecolor='white'))
+
+
 
     # Find the max values and their positions for each histogram
     max_count1 = max(counts1)

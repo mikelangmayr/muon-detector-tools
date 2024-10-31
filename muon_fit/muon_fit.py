@@ -1,6 +1,7 @@
 import glob
 import numpy as np
 from astropy.io import fits
+from scipy.stats import norm
 import matplotlib.pyplot as plt
 from muon_fit.muon_sample import muon_sample
 
@@ -88,7 +89,7 @@ def muon_fit(data_dir="", mw0=0.62, mw1=0.73, gplot=None, hplot=None, ps=None, c
 
                             # Optional crplot
                             if crplot:
-                                plot_muon(xx, sg, yfit, sno)
+                                plot_cr(xx, sg, yfit, sno)
                         else:
                             print(f"No valid weights for fitting in segment {sno}")
                     else:
@@ -132,24 +133,61 @@ def muon_fit(data_dir="", mw0=0.62, mw1=0.73, gplot=None, hplot=None, ps=None, c
     # Plotting the histograms
     plt.figure(figsize=(10, 6))
 
-    # Plot first histogram
-    plt.hist(bin_edges1[:-1], bins, histtype='step', weights=hist1, label='σMAX - σMIN', color='black', linestyle='-')
+    # Plot both histograms
+    counts1, edges1, _ = plt.hist(bin_edges1[:-1], bins, histtype='step', weights=hist1, label='σMAX - σMIN', color='green', linestyle='-')
+    counts2, edges2, _ = plt.hist(bin_edges2[:-1], bins, histtype='step', weights=hist2, label='σMAX - 1/12^(1/2)', color='blue', linestyle='-')
 
-    # Plot second histogram
-    plt.hist(bin_edges2[:-1], bins, histtype='step', weights=hist2, label='σMAX - 1/12^(1/2)', color='black', linestyle='--')
+    # Calculate the center of each bin to use in the fit
+    bin_centers1 = (bin_edges1[:-1] + bin_edges1[1:]) / 2
+    bin_centers2 = (bin_edges2[:-1] + bin_edges2[1:]) / 2
+
+    # Calculate the mean and standard deviation for each dataset
+    mean1, std_dev1 = norm.fit(np.repeat(bin_centers1, hist1.astype(int)))
+    mean2, std_dev2 = norm.fit(np.repeat(bin_centers2, hist2.astype(int)))
+
+    # Create a range of values for the Gaussian curves
+    x_values1 = np.linspace(bin_edges1[0], bin_edges1[-1], 1000)
+    x_values2 = np.linspace(bin_edges2[0], bin_edges2[-1], 1000)
+
+    # Calculate the Gaussian curve for each dataset
+    gaussian1 = norm.pdf(x_values1, mean1, std_dev1)
+    gaussian2 = norm.pdf(x_values2, mean2, std_dev2)
+
+    # Plot the Gaussian curves
+    plt.plot(x_values1, gaussian1 * sum(hist1) * (bin_edges1[1] - bin_edges1[0]), color='green', linestyle='--', label='Gaussian Fit σMAX - σMIN')
+    plt.plot(x_values2, gaussian2 * sum(hist2) * (bin_edges2[1] - bin_edges2[0]), color='blue', linestyle='--', label='Gaussian Fit σMAX - 1/12^(1/2)')
+
+    # Print mean and variance
+    print(f'σMAX - σMIN: Mean (μ): {mean1:.2f}\nVariance (σ²): {std_dev1**2:.2f}')
+    print(f'σMAX - 1/12^(1/2): Mean (μ): {mean2:.2f}\nVariance (σ²): {std_dev2**2:.2f}')
+
+    # Find the max values and their positions for each histogram
+    max_count1 = max(counts1)
+    max_count2 = max(counts2)
+    max_pos1 = edges1[np.argmax(counts1)]
+    max_pos2 = edges2[np.argmax(counts2)]
+
+    # Annotate max values on the plot
+    plt.annotate(f'Max: {int(max_count1)}', xy=(max_pos1, max_count1), 
+                xytext=(max_pos1 - 3, max_count1), ha='left',
+                arrowprops=dict(facecolor='black', arrowstyle='->'))
+
+    plt.annotate(f'Max: {int(max_count2)}', xy=(max_pos2, max_count2), 
+                xytext=(max_pos2 + 3, max_count2), ha='right',
+                arrowprops=dict(facecolor='black', arrowstyle='->'))
 
     # Adding labels and title
     plt.title('Diffusion Lengths')
     plt.xlabel('Diffusion Length (µm)')
     plt.ylabel('N')
     plt.legend(loc='upper right')
-    plt.xlim(2,30)
+    plt.xlim(2,20)
 
     # Display the plot
     plt.show()
 
 # Cr_plot
-def plot_muon(xx, sg, yfit, sno, psfile=None):
+def plot_cr(xx, sg, yfit, sno, psfile=None):
     # Set up plot appearance
     fig, ax = plt.subplots()
     ax.set_facecolor('white')
